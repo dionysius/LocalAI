@@ -1,0 +1,144 @@
+diff --git a/sources/go-bert/Makefile b/sources/go-bert/Makefile
+index 8e374a3f..b8512596 100644
+--- a/sources/go-bert/Makefile
++++ b/sources/go-bert/Makefile
+@@ -140,7 +140,7 @@ $(info )
+ 
+ 
+ ggml.o: bert.o
+-	cd bert.cpp/build && make VERBOSE=1 ggml && cp -rf ggml/src/CMakeFiles/ggml.dir/ggml.c.o ../../ggml.o
++	cd bert.cpp/build && make VERBOSE=1 ggml && cp -rf ggml/src/CMakeFiles/ggml.dir/ggml.c.obj ../../ggml.o
+ 
+ bert.cpp/build:
+ 	cd bert.cpp && mkdir build
+@@ -148,7 +148,7 @@ bert.cpp/build:
+ bert.o: bert.cpp/build
+ 	sed "s/#include <regex>/#include <regex>\n#include <unordered_map>/" bert.cpp/bert.cpp > bert.cpp/bert.tmp && mv bert.cpp/bert.tmp bert.cpp/bert.cpp
+ 	cd bert.cpp/build && cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release && make
+-	cp bert.cpp/build/CMakeFiles/bert.dir/bert.cpp.o bert.o
++	cp bert.cpp/build/CMakeFiles/bert.dir/bert.cpp.obj bert.o
+ 
+ clean:
+ 	rm -f *.o
+diff --git a/sources/go-ggml-transformers/Makefile b/sources/go-ggml-transformers/Makefile
+index 9cffc3e6..ff061580 100644
+--- a/sources/go-ggml-transformers/Makefile
++++ b/sources/go-ggml-transformers/Makefile
+@@ -147,9 +147,9 @@ $(info )
+ 
+ ggml.o:
+ 	mkdir build
+-	cd build && cmake ../ggml.cpp $(CMAKE_ARGS) && make VERBOSE=1 ggml && cp -rf src/CMakeFiles/ggml.dir/ggml.c.o ../ggml.o
++	cd build && cmake ../ggml.cpp $(CMAKE_ARGS) && make VERBOSE=1 ggml && cp -rf src/CMakeFiles/ggml.dir/ggml.c.obj ../ggml.o
+ 	@if [ "$(BUILD_TYPE)" = "cublas" ]; then \
+-		cp -rf build/src/CMakeFiles/ggml.dir/ggml-cuda.cu.o ggml-cuda.o ;\
++		cp -rf build/src/CMakeFiles/ggml.dir/ggml-cuda.cu.obj ggml-cuda.o ;\
+ 	fi
+ 
+ generic-ggml.o:
+diff --git a/sources/go-llama/Makefile b/sources/go-llama/Makefile
+index 7dc8ffa7..a5543e12 100644
+--- a/sources/go-llama/Makefile
++++ b/sources/go-llama/Makefile
+@@ -200,32 +200,32 @@ $(info )
+ # Use this if you want to set the default behavior
+ 
+ llama.cpp/grammar-parser.o:
+-	cd build && cp -rf common/CMakeFiles/common.dir/grammar-parser.cpp.o ../llama.cpp/grammar-parser.o
++	cd build && cp -rf common/CMakeFiles/common.dir/grammar-parser.cpp.obj ../llama.cpp/grammar-parser.o
+ 
+ llama.cpp/ggml-alloc.o:
+-	cd build && cp -rf CMakeFiles/ggml.dir/ggml-alloc.c.o ../llama.cpp/ggml-alloc.o
++	cd build && cp -rf CMakeFiles/ggml.dir/ggml-alloc.c.obj ../llama.cpp/ggml-alloc.o
+ 
+ llama.cpp/ggml.o: prepare
+ 	mkdir -p build
+-	cd build && CC="$(CC)" CXX="$(CXX)" cmake ../llama.cpp $(CMAKE_ARGS) && VERBOSE=1 cmake --build . --config Release && cp -rf CMakeFiles/ggml.dir/ggml.c.o ../llama.cpp/ggml.o
++	cd build && CC="$(CC)" CXX="$(CXX)" cmake ../llama.cpp $(CMAKE_ARGS) && VERBOSE=1 cmake --build . --config Release && cp -rf CMakeFiles/ggml.dir/ggml.c.obj ../llama.cpp/ggml.o
+ 
+ llama.cpp/ggml-cuda.o: llama.cpp/ggml.o
+ 	cd build && cp -rf "$(GGML_CUDA_OBJ_PATH)" ../llama.cpp/ggml-cuda.o
+ 
+ llama.cpp/ggml-opencl.o: llama.cpp/ggml.o
+-	cd build && cp -rf CMakeFiles/ggml.dir/ggml-opencl.cpp.o ../llama.cpp/ggml-opencl.o
++	cd build && cp -rf CMakeFiles/ggml.dir/ggml-opencl.cpp.obj ../llama.cpp/ggml-opencl.o
+ 
+ llama.cpp/ggml-metal.o: llama.cpp/ggml.o
+-	cd build && cp -rf CMakeFiles/ggml.dir/ggml-metal.m.o ../llama.cpp/ggml-metal.o
++	cd build && cp -rf CMakeFiles/ggml.dir/ggml-metal.m.obj ../llama.cpp/ggml-metal.o
+ 
+ llama.cpp/k_quants.o: llama.cpp/ggml.o
+-	cd build && cp -rf CMakeFiles/ggml.dir/k_quants.c.o ../llama.cpp/k_quants.o
++	cd build && cp -rf CMakeFiles/ggml.dir/k_quants.c.obj ../llama.cpp/k_quants.o
+ 
+ llama.cpp/llama.o:
+-	cd build && cp -rf CMakeFiles/llama.dir/llama.cpp.o ../llama.cpp/llama.o
++	cd build && cp -rf CMakeFiles/llama.dir/llama.cpp.obj ../llama.cpp/llama.o
+ 
+ llama.cpp/common.o:
+-	cd build && cp -rf common/CMakeFiles/common.dir/common.cpp.o ../llama.cpp/common.o
++	cd build && cp -rf common/CMakeFiles/common.dir/common.cpp.obj ../llama.cpp/common.o
+ 
+ binding.o: prepare llama.cpp/ggml.o llama.cpp/llama.o llama.cpp/common.o llama.cpp/grammar-parser.o llama.cpp/ggml-alloc.o
+ 	$(CXX) $(CXXFLAGS) -I./llama.cpp -I./llama.cpp/common binding.cpp -o binding.o -c $(LDFLAGS)
+diff --git a/sources/go-llama-ggml/Makefile b/sources/go-llama-ggml/Makefile
+index 1d703877..e3e7f2ae 100644
+--- a/sources/go-llama-ggml/Makefile
++++ b/sources/go-llama-ggml/Makefile
+@@ -176,32 +176,32 @@ $(info )
+ # Use this if you want to set the default behavior
+ 
+ llama.cpp/grammar-parser.o:
+-	cd build && cp -rf examples/CMakeFiles/common.dir/grammar-parser.cpp.o ../llama.cpp/grammar-parser.o
++	cd build && cp -rf examples/CMakeFiles/common.dir/grammar-parser.cpp.obj ../llama.cpp/grammar-parser.o
+ 
+ llama.cpp/ggml-alloc.o:
+-	cd build && cp -rf CMakeFiles/ggml.dir/ggml-alloc.c.o ../llama.cpp/ggml-alloc.o
++	cd build && cp -rf CMakeFiles/ggml.dir/ggml-alloc.c.obj ../llama.cpp/ggml-alloc.o
+ 
+ llama.cpp/ggml.o: prepare
+ 	mkdir -p build
+-	cd build && cmake ../llama.cpp $(CMAKE_ARGS) && VERBOSE=1 cmake --build . --config Release && cp -rf CMakeFiles/ggml.dir/ggml.c.o ../llama.cpp/ggml.o
++	cd build && cmake ../llama.cpp $(CMAKE_ARGS) && VERBOSE=1 cmake --build . --config Release && cp -rf CMakeFiles/ggml.dir/ggml.c.obj ../llama.cpp/ggml.o
+ 
+ llama.cpp/ggml-cuda.o: llama.cpp/ggml.o
+-	cd build && cp -rf CMakeFiles/ggml.dir/ggml-cuda.cu.o ../llama.cpp/ggml-cuda.o
++	cd build && cp -rf CMakeFiles/ggml.dir/ggml-cuda.cu.obj ../llama.cpp/ggml-cuda.o
+ 
+ llama.cpp/ggml-opencl.o: llama.cpp/ggml.o
+-	cd build && cp -rf CMakeFiles/ggml.dir/ggml-opencl.cpp.o ../llama.cpp/ggml-opencl.o
++	cd build && cp -rf CMakeFiles/ggml.dir/ggml-opencl.cpp.obj ../llama.cpp/ggml-opencl.o
+ 
+ llama.cpp/ggml-metal.o: llama.cpp/ggml.o
+-	cd build && cp -rf CMakeFiles/ggml.dir/ggml-metal.m.o ../llama.cpp/ggml-metal.o
++	cd build && cp -rf CMakeFiles/ggml.dir/ggml-metal.m.obj ../llama.cpp/ggml-metal.o
+ 
+ llama.cpp/k_quants.o: llama.cpp/ggml.o
+-	cd build && cp -rf CMakeFiles/ggml.dir/k_quants.c.o ../llama.cpp/k_quants.o
++	cd build && cp -rf CMakeFiles/ggml.dir/k_quants.c.obj ../llama.cpp/k_quants.o
+ 
+ llama.cpp/llama.o:
+-	cd build && cp -rf CMakeFiles/llama.dir/llama.cpp.o ../llama.cpp/llama.o
++	cd build && cp -rf CMakeFiles/llama.dir/llama.cpp.obj ../llama.cpp/llama.o
+ 
+ llama.cpp/common.o:
+-	cd build && cp -rf examples/CMakeFiles/common.dir/common.cpp.o ../llama.cpp/common.o
++	cd build && cp -rf examples/CMakeFiles/common.dir/common.cpp.obj ../llama.cpp/common.o
+ 
+ binding.o: prepare llama.cpp/ggml.o llama.cpp/llama.o llama.cpp/common.o llama.cpp/grammar-parser.o llama.cpp/ggml-alloc.o
+ 	$(CXX) $(CXXFLAGS) -I./llama.cpp -I./llama.cpp/examples binding.cpp -o binding.o -c $(LDFLAGS)
+diff --git a/sources/gpt4all/gpt4all-bindings/golang/Makefile b/sources/gpt4all/gpt4all-bindings/golang/Makefile
+index 9d230008..a3e88f08 100644
+--- a/sources/gpt4all/gpt4all-bindings/golang/Makefile
++++ b/sources/gpt4all/gpt4all-bindings/golang/Makefile
+@@ -141,8 +141,8 @@ $(info )
+ llmodel.o:
+ 	mkdir buildllm
+ 	cd buildllm && cmake ../../../gpt4all-backend/ $(CMAKEFLAGS) && make
+-	cd buildllm && cp -rf CMakeFiles/llmodel.dir/llmodel_c.cpp.o ../llmodel_c.o
+-	cd buildllm && cp -rf CMakeFiles/llmodel.dir/llmodel.cpp.o ../llmodel.o
++	cd buildllm && cp -rf CMakeFiles/llmodel.dir/llmodel_c.cpp.obj ../llmodel_c.o
++	cd buildllm && cp -rf CMakeFiles/llmodel.dir/llmodel.cpp.obj ../llmodel.o
+ 
+ clean:
+ 	rm -f *.o

@@ -5,6 +5,7 @@ __pycache__/
 get-sources
 prepare-sources
 /backend/cpp/llama/grpc-server
+/backend/cpp/llama/grpc-server.exe
 /backend/cpp/llama/llama.cpp
 
 go-ggml-transformers
@@ -17,6 +18,7 @@ go-bert
 # LocalAI build binary
 LocalAI
 local-ai
+local-ai.exe
 # prevent above rules from omitting the helm chart
 !charts/*
 # prevent above rules from omitting the api/localai folder
